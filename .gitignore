@@ -1,4 +1,5 @@
 *.ts
 *.txt
-temp
+*.m3u8key
+*.sh
 __pycache__
