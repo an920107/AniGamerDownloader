@@ -7,12 +7,11 @@ from ua import UserAgent
 HTTPS = "https://"
 HOST = "ani.gamer.com.tw"
 
-FILE_PREFIX = "Python/AniGamer/"
-COOKIE_FILE = FILE_PREFIX + "config/cookie.txt"
-UA_FILE = FILE_PREFIX + "config/user_agent.txt"
+COOKIE_FILE = "config/cookie.txt"
+UA_FILE = "config/user_agent.txt"
 
-TEMP_DEST = FILE_PREFIX + "temp/"
-KEY_FILE = FILE_PREFIX + "temp/key.m3u8key"
+TEMP_DEST = "temp/"
+KEY_FILE = "temp/key.m3u8key"
 
 class Anime:
 
