@@ -1,3 +1,4 @@
 cryptography==2.8
 tqdm==4.61.1
 requests==2.28.1
+pycrypto==2.6.1
