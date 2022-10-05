@@ -1,4 +1,4 @@
-import requests, re, platform, subprocess
+import requests, re, platform
 from Crypto.Cipher import AES
 from tqdm import tqdm
 from cookie import Cookie
