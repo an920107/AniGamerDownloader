@@ -1,4 +1,3 @@
-from sys import stdout
 import requests, re, platform, subprocess
 from Crypto.Cipher import AES
 from tqdm import tqdm
