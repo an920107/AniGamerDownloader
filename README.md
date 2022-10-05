@@ -5,7 +5,8 @@
 - 目前僅支援 Unix-like 環境
 - 目前未處理非 VIP 用戶
 - 目前未登入 Cookies 無法使用
-所以，還是先乖乖克金吧！
+
+**所以，還是先乖乖克金吧！**
 
 ## 安裝
 
@@ -21,7 +22,7 @@ pip3 install -r requirements.txt
 
 ## Cookies 與 User-Agent
 
-好懶，心情好再寫。
+*好懶，心情好再寫。*
 
 ## 使用說明
 
