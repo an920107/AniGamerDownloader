@@ -1,5 +1,6 @@
 *.ts
-*.txt
+cookies.txt
+user_agent.txt
 *.m3u8key
 *.sh
 __pycache__

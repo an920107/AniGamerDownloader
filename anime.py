@@ -1,5 +1,5 @@
 from sys import stdout
-import requests, re, platform, subprocess, os
+import requests, re, platform, subprocess
 from Crypto.Cipher import AES
 from tqdm import tqdm
 from cookie import Cookie
@@ -8,7 +8,7 @@ from ua import UserAgent
 HTTPS = "https://"
 HOST = "ani.gamer.com.tw"
 
-COOKIE_FILENAME = "config/cookie.txt"
+COOKIE_FILENAME = "config/cookies.txt"
 UA_FILENAME = "config/user_agent.txt"
 BASH_FILENAME = "temp/composing.sh"
 KEY_FILENAME = "temp/key.m3u8key"
