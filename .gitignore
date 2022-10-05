@@ -1,2 +1,4 @@
 *.ts
 *.txt
+temp
+__pycache__
