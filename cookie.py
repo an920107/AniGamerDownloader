@@ -1,7 +1,7 @@
 class Cookie:
 
     _filename: str
-    _cookie: dict
+    _cookies: dict
 
     def __init__(self, filename: str) -> None:
         self._filename = filename
@@ -11,7 +11,7 @@ class Cookie:
         lst = open(self._filename, "r").readline().split("; ")
         for i in range(len(lst)):
             lst[i] = lst[i].split("=")
-        self._cookie = {elm[0]: elm[1] for elm in lst}
+        self._cookies = {elm[0]: elm[1] for elm in lst}
 
     def get_cookie(self) -> dict:
-        return self._cookie
+        return self._cookies

@@ -1,4 +1,5 @@
-import requests, re, platform
+from sys import stdout
+import requests, re, platform, subprocess, os
 from Crypto.Cipher import AES
 from tqdm import tqdm
 from cookie import Cookie
@@ -7,11 +8,14 @@ from ua import UserAgent
 HTTPS = "https://"
 HOST = "ani.gamer.com.tw"
 
-COOKIE_FILE = "config/cookie.txt"
-UA_FILE = "config/user_agent.txt"
+COOKIE_FILENAME = "config/cookie.txt"
+UA_FILENAME = "config/user_agent.txt"
+BASH_FILENAME = "temp/composing.sh"
+KEY_FILENAME = "temp/key.m3u8key"
 
 TEMP_DEST = "temp/"
-KEY_FILE = "temp/key.m3u8key"
+DOWNLOAD_DEST = "download/"
+
 
 class Anime:
 
@@ -25,8 +29,8 @@ class Anime:
 
     def __init__(self, sn: int) -> None:
         self._sn = sn
-        self._cookies = Cookie(COOKIE_FILE).get_cookie()
-        self._headers = {"user-agent": UserAgent(UA_FILE).get_user_agent()}
+        self._cookies = Cookie(COOKIE_FILENAME).get_cookie()
+        self._headers = {"user-agent": UserAgent(UA_FILENAME).get_user_agent()}
         self._device_id = self._get_device_id()
         self._playlist_url = self._get_playlist_url()
         self._playlist = self._get_playlist()
@@ -38,7 +42,14 @@ class Anime:
             headers["origin"] = HTTPS + HOST
         for k, v in addi_headers.items():
             headers[k] = v
-        return requests.get(url, headers= headers, cookies= {} if no_cookie else self._cookies)
+        tyied_time = 0
+        while True:
+            try:
+                return requests.get(url, headers= headers, cookies= {} if no_cookie else self._cookies)
+            except:
+                tyied_time += 1
+                if tyied_time >= 3:
+                    raise Exception("未知連線錯誤")
 
     def _get_device_id(self) -> str:
         res = self.__requests(HTTPS + HOST + "/ajax/getdeviceid.php")
@@ -64,8 +75,8 @@ class Anime:
         return "ffmpeg.exe" if "windows" in platform.system().lower() else "ffmpeg"
 
     def download(self, dest: str = "", resolution: int = 1080) -> None:
-        if self._playlist.get(resolution) == None:
-            raise KeyError("無法下載 {resolution}p 的影片")
+        if resolution not in self._playlist.keys():
+            raise Exception("無法下載 {resolution}p 的影片")
         
         res = self.__requests(self._playlist[resolution], no_origin_header= False)
         m3u8_content = res.content.decode()
@@ -73,7 +84,7 @@ class Anime:
         
         # 儲存 m3u8key
         m3u8_keyfile = re.search(r"(?<=AES-128,URI=\")(.*)(?=\")", m3u8_content).group()
-        open(KEY_FILE, "wb").write(self.__requests(url_prefix + m3u8_keyfile, no_origin_header= False, no_cookie= True).content)
+        open(KEY_FILENAME, "wb").write(self.__requests(url_prefix + m3u8_keyfile, no_origin_header= False, no_cookie= True).content)
         
 
         # 儲存分段 ts 檔
@@ -82,7 +93,7 @@ class Anime:
             open(TEMP_DEST + filename, "wb").write(self.__requests(url_prefix + filename, no_origin_header= False, no_cookie= True).content)
 
         # AES-128 解密
-        aes_key = open(KEY_FILE, "rb").read()
+        aes_key = open(KEY_FILENAME, "rb").read()
         for filename in chunk_list:
             with open(TEMP_DEST + filename, "rb") as file:
                 data = file.read()
@@ -91,10 +102,12 @@ class Anime:
                 file.write(cipher.decrypt(data))
 
         # 合併 ts 檔
-        bash_file = open(TEMP_DEST + "run.sh", "w")
+        bash_file = open(BASH_FILENAME, "w")
         bash_file.write("#!/bin/bash\ncat ")
         for filename in chunk_list:
-            bash_file.write(filename + " ")
-        bash_file.write("> media.ts\n")
-        for filename in chunk_list:
-            bash_file.write("rm " + filename + "\n")
+            bash_file.write(TEMP_DEST + filename + " ")
+        bash_file.write("> " + TEMP_DEST + "media.ts\nmv " + TEMP_DEST + "media.ts " + DOWNLOAD_DEST + str(self._sn) + ".ts\n")
+        bash_file.write("rm " + TEMP_DEST + "*.ts\n")
+        bash_file.close()
+        subprocess.run(["chmod", "+x", BASH_FILENAME])
+        subprocess.run([BASH_FILENAME], shell= True)
