@@ -75,7 +75,7 @@ class Anime:
 
     def download(self, dest: str = "", resolution: int = 1080) -> None:
         if resolution not in self._playlist.keys():
-            raise Exception("無法下載 {resolution}p 的影片")
+            raise Exception(f"無法下載 {resolution}p 的影片")
         
         res = self.__requests(self._playlist[resolution], no_origin_header= False)
         m3u8_content = res.content.decode()
